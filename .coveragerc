@@ -1,0 +1,7 @@
+[run]
+branch = True
+source = gooco
+omit = gooco/tests/*,gooco/openstack/*
+
+[report]
+ignore-errors = True
