@@ -105,7 +105,7 @@ class ContactsAPI(object):
             c = self.api.people().connections().list(
                 resourceName='people/me',
                 sortOrder=sort_order,
-                requestMask_includeField='person.names,person.email_addresses',
+                personFields='names,email_addresses',
                 pageSize=100,
                 pageToken=next_page,
             ).execute()
