@@ -24,6 +24,7 @@ import six
 from gooco import contacts
 from gooco import creds
 from gooco import exception
+from gooco import interface
 from gooco import utils
 
 
@@ -31,6 +32,7 @@ def add_command_parsers(subparsers):
     AuthenticateCommand(subparsers)
     ListCommand(subparsers)
     GetCommand(subparsers)
+    InterfaceCommand(subparsers)
 
 
 command_opt = cfg.SubCommandOpt('command',
@@ -72,6 +74,15 @@ class AuthenticateCommand(Command):
             print("Authentication was NOT successful")
         else:
             print("Authentication was successful")
+
+
+class InterfaceCommand(Command):
+    def __init__(self, parser, name="curses",
+                 cmd_help="Start curses interface"):
+        super(InterfaceCommand, self).__init__(parser, name, cmd_help)
+
+    def run(self):
+        interface.Interface()
 
 
 class GetCommand(Command):
