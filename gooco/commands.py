@@ -21,12 +21,15 @@ import oauth2client.tools
 from oslo_config import cfg
 import six
 
+from gooco import contacts
 from gooco import creds
 from gooco import exception
+from gooco import utils
 
 
 def add_command_parsers(subparsers):
     AuthenticateCommand(subparsers)
+    ListCommand(subparsers)
 
 
 command_opt = cfg.SubCommandOpt('command',
@@ -40,7 +43,7 @@ CONF.register_cli_opt(command_opt)
 
 @six.add_metaclass(abc.ABCMeta)
 class Command(object):
-    def __init__(self, parser, name, cmd_help, parents=None):
+    def __init__(self, parser, name, cmd_help, parents=[]):
         self.name = name
         self.cmd_help = cmd_help
         self.parser = parser.add_parser(name, help=cmd_help, parents=parents)
@@ -68,6 +71,17 @@ class AuthenticateCommand(Command):
             print("Authentication was NOT successful")
         else:
             print("Authentication was successful")
+
+
+class ListCommand(Command):
+    def __init__(self, parser, name="list",
+                 cmd_help="List all contacts"):
+        super(ListCommand, self).__init__(parser, name, cmd_help)
+
+    def run(self):
+        c = contacts.API.list_contacts()
+        fields = ["Person ID", "Name", "Email"]
+        utils.print_list(c, fields)
 
 
 class CommandManager(object):

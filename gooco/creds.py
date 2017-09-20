@@ -48,13 +48,13 @@ opts = [
 CONF = cfg.CONF
 CONF.register_opts(opts)
 
-_SCOPE = ['https://www.google.com/m8/feeds']
+_SCOPE = ['https://www.googleapis.com/auth/contacts.readonly']
 _API_CLIENT_ID = ("760477478139-urpn11m4js4su1q43o18jmmdgmegdsq2."
                   "apps.googleusercontent.com")
 _API_CLIENT_SECRET = "tuoZmkdIkfXcvYevAJqu33g5"
 
 
-def get_credentials(args):
+def get_credentials(args=None):
     store_file = os.path.expanduser(CONF.client_credentials_store)
     store = oauth2client.file.Storage(store_file)
 
