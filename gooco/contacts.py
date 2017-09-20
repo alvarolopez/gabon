@@ -12,19 +12,63 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import copy
 import httplib2
 
 from apiclient import discovery
+import six
 
 from gooco import creds
 
 
 class Contact(object):
-    def __init__(self, person_id, name, email):
-        person_id = person_id.replace("people/", "")
+    def __init__(self, person_id, info):
         self.person_id = person_id
-        self.name = name
-        self.email = email
+
+        self._info = {}
+        self._raw_data = info
+        self._loaded = False
+
+        self._add_details(self._raw_data)
+
+    def _add_details(self, raw):
+        get_primary = lambda x: x["metadata"].get("primary")
+
+        name = filter(get_primary, raw["names"])[0]["displayName"]
+        email = filter(get_primary, raw["emailAddresses"])[0]["value"]
+
+        nicknames = raw.get("nicknames", [])
+
+        if name is not None:
+            self._info["name"] = name
+
+        if email is not None:
+            self._info["email"] = email
+
+        self._info["nicknames"] = nicknames
+
+        for (k, v) in six.iteritems(self._info):
+            try:
+                setattr(self, k, v)
+                self._info[k] = v
+            except AttributeError:
+                # In this case we already defined the attribute on the class
+                pass
+
+    def __getattr__(self, k):
+        if k not in self.__dict__:
+            raise AttributeError(k)
+        else:
+            return self.__dict__[k]
+
+    def is_loaded(self):
+        return self._loaded
+
+    def set_loaded(self, val):
+        self._loaded = val
+
+    def to_dict(self):
+        return copy.deepcopy(self._info)
 
 
 class ContactsAPI(object):
@@ -47,6 +91,13 @@ class ContactsAPI(object):
             )
         return self._people_service
 
+    def get_contact(self, contact_id):
+        fields = 'names,email_addresses,nicknames'
+        info = self.api.people().get(resourceName=contact_id,
+                                     personFields=fields).execute()
+        c = Contact(contact_id, info)
+        return c
+
     def list_contacts(self, sort_order="FIRST_NAME_ASCENDING"):
         l = []
         next_page = None
@@ -59,11 +110,9 @@ class ContactsAPI(object):
                 pageToken=next_page,
             ).execute()
             for x in c["connections"]:
-                get_primary = lambda x: x["metadata"].get("primary")
-                name = filter(get_primary, x["names"])[0]["displayName"]
-                email = filter(get_primary, x["emailAddresses"])[0]["value"]
+                info = x
                 person_id = x["resourceName"]
-                l.append(Contact(person_id, name, email))
+                l.append(Contact(person_id, info=info))
             next_page = c.get("nextPageToken", None)
             if next_page is None:
                 break

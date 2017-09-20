@@ -48,3 +48,31 @@ def print_list(objs, fields, formatters={}, sortby_index=None):
         result = result.decode()
 
     print(result)
+
+
+def print_dict(d, dict_property="Property", dict_value="Value"):
+    pt = prettytable.PrettyTable([dict_property, dict_value], caching=False)
+    pt.align = 'l'
+    for k, v in sorted(d.items()):
+        # if value has a newline, add in multiple rows
+        # e.g. fault with stacktrace
+        if v and isinstance(v, six.string_types) and (r'\n' in v or '\r' in v):
+            # '\r' would break the table, so remove it.
+            if '\r' in v:
+                v = v.replace('\r', '')
+            lines = v.strip().split(r'\n')
+            col1 = k
+            for line in lines:
+                pt.add_row([col1, line])
+                col1 = ''
+        else:
+            if v is None:
+                v = '-'
+            pt.add_row([k, v])
+
+    result = pt.get_string()
+
+    if six.PY3:
+        result = result.decode()
+
+    print(result)

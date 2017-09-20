@@ -30,6 +30,7 @@ from gooco import utils
 def add_command_parsers(subparsers):
     AuthenticateCommand(subparsers)
     ListCommand(subparsers)
+    GetCommand(subparsers)
 
 
 command_opt = cfg.SubCommandOpt('command',
@@ -71,6 +72,19 @@ class AuthenticateCommand(Command):
             print("Authentication was NOT successful")
         else:
             print("Authentication was successful")
+
+
+class GetCommand(Command):
+    def __init__(self, parser, name="get",
+                 cmd_help="Get info from contact"):
+        super(GetCommand, self).__init__(parser, name, cmd_help)
+        self.parser.add_argument("person_id",
+                                 help="Person ID to retrieve.")
+
+    def run(self):
+        person_id = CONF.command.person_id
+        c = contacts.API.get_contact(person_id)
+        utils.print_dict(c.to_dict())
 
 
 class ListCommand(Command):
