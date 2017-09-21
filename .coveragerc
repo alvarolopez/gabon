@@ -1,7 +1,7 @@
 [run]
 branch = True
-source = gooco
-omit = gooco/tests/*,gooco/openstack/*
+source = gabon
+omit = gabon/tests/*,gabon/openstack/*
 
 [report]
 ignore-errors = True

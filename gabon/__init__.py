@@ -12,17 +12,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-"""
-test_gooco
-----------------------------------
-
-Tests for `gooco` module.
-"""
-
-from gooco.tests import base
+import pbr.version
 
 
-class TestGooco(base.TestCase):
-
-    def test_something(self):
-        pass
+__version__ = pbr.version.VersionInfo(
+    'gabon').version_string()

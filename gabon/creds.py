@@ -19,7 +19,7 @@ import oauth2client.file
 import oauth2client.tools
 from oslo_config import cfg
 
-from gooco import exception
+from gabon import exception
 
 opts = [
     cfg.StrOpt('client_id',
@@ -40,7 +40,7 @@ opts = [
     # need to crete directories if they do not exist, if permissions are wrong,
     # etc.
     cfg.StrOpt('client_credentials_store',
-               default='~/.gooco/client_auth.json',
+               default='~/.gabon/client_auth.json',
                help='Path where client credentials are stored.')
 ]
 

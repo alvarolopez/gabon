@@ -36,7 +36,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'gooco'
+project = u'gabon'
 copyright = u'2014, Alvaro Lopez Garcia
 
 # If true, '()' will be appended to :func: etc. cross-reference text.

@@ -18,7 +18,7 @@ import httplib2
 from apiclient import discovery
 import six
 
-from gooco import creds
+from gabon import creds
 
 
 class Contact(object):

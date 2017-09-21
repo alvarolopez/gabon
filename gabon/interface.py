@@ -14,8 +14,8 @@
 
 import curses
 
-from gooco import contacts
-from gooco import version
+from gabon import contacts
+from gabon import version
 
 
 class Interface(object):
@@ -32,7 +32,7 @@ class Interface(object):
         return self._contacts
 
     def draw_title(self):
-        self.stdscr.addstr(0, 0, "gooco v" + version.version_string)
+        self.stdscr.addstr(0, 0, "gabon v" + version.version_string)
         self.stdscr.addstr(" | q: quit")
         self.stdscr.addstr("  h: help")
         self.stdscr.hline(1, 0, curses.ACS_HLINE, curses.COLS)

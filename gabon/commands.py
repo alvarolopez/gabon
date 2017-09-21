@@ -21,11 +21,11 @@ import oauth2client.tools
 from oslo_config import cfg
 import six
 
-from gooco import contacts
-from gooco import creds
-from gooco import exception
-from gooco import interface
-from gooco import utils
+from gabon import contacts
+from gabon import creds
+from gabon import exception
+from gabon import interface
+from gabon import utils
 
 
 def add_command_parsers(subparsers):
