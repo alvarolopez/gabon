@@ -12,6 +12,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import os
 import os.path
 
 import oauth2client.client
@@ -56,6 +57,11 @@ _API_CLIENT_SECRET = "tuoZmkdIkfXcvYevAJqu33g5"
 
 def get_credentials(args=None):
     store_file = os.path.expanduser(CONF.client_credentials_store)
+
+    dirname = os.path.dirname(store_file)
+    if not os.path.exists(dirname):
+        os.mkdir(dirname)
+
     store = oauth2client.file.Storage(store_file)
 
     creds = store.get()
