@@ -71,9 +71,10 @@ class AuthenticateCommand(Command):
         args = oauth2client.tools.argparser.parse_known_args(sys.argv)[0]
         c = creds.get_credentials(args)
         if c.invalid:
-            print("Authentication was NOT successful")
+            print("Authentication was NOT successful.")
         else:
-            print("Authentication was successful")
+            print("Authentication was successful. You do not need "
+                  "to run this command again.")
 
 
 class InterfaceCommand(Command):
