@@ -114,7 +114,7 @@ class CommandManager(object):
     def execute(self):
         try:
             CONF.command.func()
-        except exception.GoocoException as e:
+        except exception.GabonException as e:
             print("ERROR: %s" % e, file=sys.stderr)
             sys.exit(1)
         except KeyboardInterrupt:
