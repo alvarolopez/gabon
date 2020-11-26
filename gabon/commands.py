@@ -32,6 +32,7 @@ def add_command_parsers(subparsers):
     AuthenticateCommand(subparsers)
     ListCommand(subparsers)
     GetCommand(subparsers)
+    QueryCommand(subparsers)
     InterfaceCommand(subparsers)
 
 
@@ -108,6 +109,27 @@ class ListCommand(Command):
         c = contacts.API.list_contacts()
         fields = ["Person ID", "Name", "Email"]
         utils.print_list(c, fields)
+
+
+class QueryCommand(Command):
+    def __init__(self, parser, name="query",
+                 cmd_help="Search contacts using given query"):
+        super(QueryCommand, self).__init__(parser, name, cmd_help)
+        self.parser.add_argument("query",
+                                 help="Query string (Regular expression).")
+        self.parser.add_argument("-m", "--mutt",
+                                 action="store_true",
+                                 default=False,
+                                 help="Use Mutt query format (default: False")
+
+    def run(self):
+        query = CONF.command.query
+        c = contacts.API.query_contacts(query)
+        if CONF.command.mutt:
+            utils.print_mutt(c)
+        else:
+            fields = ["Person ID", "Name", "Email"]
+            utils.print_list(c, fields)
 
 
 class CommandManager(object):
