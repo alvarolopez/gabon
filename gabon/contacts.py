@@ -32,19 +32,21 @@ class Contact(object):
         self._add_details(self._raw_data)
 
     def _add_details(self, raw):
+        names = raw.get("names", [])
+        emails = raw.get("emailAddresses", [])
+
         get_primary = lambda x: x["metadata"].get("primary")
 
-        name = filter(get_primary, raw["names"])[0]["displayName"]
-        email = filter(get_primary, raw["emailAddresses"])[0]["value"]
+        name = email = ""
+        if names:
+            name = list(filter(get_primary, names))[0]["displayName"]
+        if emails:
+            email = list(filter(get_primary, emails))[0]["value"]
 
         nicknames = raw.get("nicknames", [])
 
-        if name is not None:
-            self._info["name"] = name
-
-        if email is not None:
-            self._info["email"] = email
-
+        self._info["name"] = name
+        self._info["email"] = email
         self._info["nicknames"] = nicknames
 
         for (k, v) in six.iteritems(self._info):
