@@ -16,6 +16,14 @@ import prettytable
 import six
 
 
+def print_mutt(objs):
+    out = "\n"
+    for o in objs:
+        for email in o.emails:
+            out += f"{email}\t{o.name}\n"
+    print(out)
+
+
 def print_list(objs, fields, formatters={}, sortby_index=None):
     if sortby_index is None:
         sortby = None
