@@ -60,7 +60,8 @@ class Command(object):
 
 class AuthenticateCommand(Command):
     def __init__(self, parser, name="authenticate",
-                 cmd_help="Authenticate using Google OAuth2"):
+                 cmd_help="Authenticate using Google OAuth2 (do this "
+                          "only once)"):
         super(AuthenticateCommand, self).__init__(
             parser,
             name,
@@ -89,7 +90,7 @@ class InterfaceCommand(Command):
 
 class GetCommand(Command):
     def __init__(self, parser, name="get",
-                 cmd_help="Get info from contact"):
+                 cmd_help="Get info from a single contact"):
         super(GetCommand, self).__init__(parser, name, cmd_help)
         self.parser.add_argument("person_id",
                                  help="Person ID to retrieve.")
@@ -102,7 +103,7 @@ class GetCommand(Command):
 
 class ListCommand(Command):
     def __init__(self, parser, name="list",
-                 cmd_help="List all contacts"):
+                 cmd_help="List all contact names and their default email"):
         super(ListCommand, self).__init__(parser, name, cmd_help)
 
     def run(self):
