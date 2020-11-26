@@ -41,7 +41,7 @@ opts = [
     # need to crete directories if they do not exist, if permissions are wrong,
     # etc.
     cfg.StrOpt('client_credentials_store',
-               default='~/.gabon/client_auth.json',
+               default='~/.config/gabon/client_auth.json',
                help='Path where client credentials are stored.')
 ]
 

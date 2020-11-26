@@ -44,9 +44,6 @@ def print_list(objs, fields, formatters={}, sortby_index=None):
     else:
         result = pt.get_string()
 
-    if six.PY3:
-        result = result.decode()
-
     print(result)
 
 
@@ -71,8 +68,5 @@ def print_dict(d, dict_property="Property", dict_value="Value"):
             pt.add_row([k, v])
 
     result = pt.get_string()
-
-    if six.PY3:
-        result = result.decode()
 
     print(result)
