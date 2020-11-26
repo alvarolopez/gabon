@@ -105,11 +105,22 @@ class ListCommand(Command):
     def __init__(self, parser, name="list",
                  cmd_help="List all contact names and their default email"):
         super(ListCommand, self).__init__(parser, name, cmd_help)
+        self.parser.add_argument("-l", "--long",
+                                 action="store_true",
+                                 default=False,
+                                 help="List also the contacts alternate names,"
+                                      " email addresses and nicknames")
 
     def run(self):
         c = contacts.API.list_contacts()
-        fields = ["Person ID", "Name", "Email"]
-        utils.print_list(c, fields)
+        if CONF.command.long:
+            fields = ["Person ID", "Names", "Nickname", "Emails", ]
+            formatters = {"Names": ", ".join,
+                          "Emails": ", ".join}
+        else:
+            fields = ["Person ID", "Name", "Email"]
+            formatters = {}
+        utils.print_list(c, fields, formatters=formatters)
 
 
 class QueryCommand(Command):

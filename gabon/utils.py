@@ -35,13 +35,13 @@ def print_list(objs, fields, formatters={}, sortby_index=None):
     for o in objs:
         row = []
         for field in fields:
+            field_name = field.lower().replace(' ', '_')
+            data = getattr(o, field_name, '')
+            if not data:
+                data = '-'
             if field in formatters:
-                row.append(formatters[field](o))
+                row.append(formatters[field](data))
             else:
-                field_name = field.lower().replace(' ', '_')
-                data = getattr(o, field_name, '')
-                if data is None:
-                    data = '-'
                 # '\r' would break the table, so remove it.
                 data = six.text_type(data).replace("\r", "")
                 row.append(data)
