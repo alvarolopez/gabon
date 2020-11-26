@@ -14,6 +14,7 @@
 
 import copy
 import httplib2
+import re
 
 from apiclient import discovery
 import six
@@ -32,19 +33,25 @@ class Contact(object):
         self._add_details(self._raw_data)
 
     def _add_details(self, raw):
-        get_primary = lambda x: x["metadata"].get("primary")
+        names = raw.get("names", [])
+        emails = raw.get("emailAddresses", [])
 
-        name = filter(get_primary, raw["names"])[0]["displayName"]
-        email = filter(get_primary, raw["emailAddresses"])[0]["value"]
+        def get_primary(x):
+            return x["metadata"].get("primary")
+
+        name = ""
+        if names:
+            name = list(filter(get_primary, names))[0]["displayName"]
+        self._info["name"] = name
+        self._info["names"] = [x["displayName"] for x in names]
+
+        email = ""
+        if emails:
+            email = list(filter(get_primary, emails))[0]["value"]
+        self._info["email"] = email
+        self._info["emails"] = [x["value"] for x in emails]
 
         nicknames = raw.get("nicknames", [])
-
-        if name is not None:
-            self._info["name"] = name
-
-        if email is not None:
-            self._info["email"] = email
-
         self._info["nicknames"] = nicknames
 
         for (k, v) in six.iteritems(self._info):
@@ -117,6 +124,34 @@ class ContactsAPI(object):
             if next_page is None:
                 break
         return l
+
+    def query_contacts(self, query):
+        contacts = self.list_contacts()
+        query = re.compile(query.replace(' ', '.*'), re.I)
+
+        def search(contact):
+            match = False
+            for search_attr in (
+                    "names",
+                    "emails",
+                    "nicknames",
+            ):
+                search_item = contact.__getattr__(search_attr)
+
+                # We do a regex search and keep the matching string
+                search = [query.search(x) and x for x in search_item]
+
+                if any(search):
+                    # We have a match here, lets replace that attribute
+                    # with only those matching the query
+                    search = [x for x in search if x]
+                    contact.__setattr__(search_attr, search)
+                    match = True
+
+            return match
+
+        contacts = list(filter(search, contacts))
+        return contacts
 
 
 API = ContactsAPI()

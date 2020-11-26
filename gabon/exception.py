@@ -13,7 +13,7 @@
 # under the License.
 
 
-class GoocoException(Exception):
+class GabonException(Exception):
     msg_fmt = "An unknown exception occurred."
 
     def __init__(self, message=None, **kwargs):
@@ -27,8 +27,8 @@ class GoocoException(Exception):
                 # log the issue and the kwargs
                 message = self.msg_fmt
 
-        super(GoocoException, self).__init__(message)
+        super(GabonException, self).__init__(message)
 
 
-class InvalidConfiguration(Exception):
+class InvalidConfiguration(GabonException):
     msg_fmt = "Invalid configuration was found: %(reason)s"

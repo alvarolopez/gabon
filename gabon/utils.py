@@ -16,6 +16,14 @@ import prettytable
 import six
 
 
+def print_mutt(objs):
+    out = "\n"
+    for o in objs:
+        for email in o.emails:
+            out += f"{email}\t{o.name}\n"
+    print(out)
+
+
 def print_list(objs, fields, formatters={}, sortby_index=None):
     if sortby_index is None:
         sortby = None
@@ -27,13 +35,13 @@ def print_list(objs, fields, formatters={}, sortby_index=None):
     for o in objs:
         row = []
         for field in fields:
+            field_name = field.lower().replace(' ', '_')
+            data = getattr(o, field_name, '')
+            if not data:
+                data = '-'
             if field in formatters:
-                row.append(formatters[field](o))
+                row.append(formatters[field](data))
             else:
-                field_name = field.lower().replace(' ', '_')
-                data = getattr(o, field_name, '')
-                if data is None:
-                    data = '-'
                 # '\r' would break the table, so remove it.
                 data = six.text_type(data).replace("\r", "")
                 row.append(data)
@@ -43,9 +51,6 @@ def print_list(objs, fields, formatters={}, sortby_index=None):
         result = pt.get_string(sortby=sortby)
     else:
         result = pt.get_string()
-
-    if six.PY3:
-        result = result.decode()
 
     print(result)
 
@@ -71,8 +76,5 @@ def print_dict(d, dict_property="Property", dict_value="Value"):
             pt.add_row([k, v])
 
     result = pt.get_string()
-
-    if six.PY3:
-        result = result.decode()
 
     print(result)

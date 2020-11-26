@@ -32,6 +32,7 @@ def add_command_parsers(subparsers):
     AuthenticateCommand(subparsers)
     ListCommand(subparsers)
     GetCommand(subparsers)
+    QueryCommand(subparsers)
     InterfaceCommand(subparsers)
 
 
@@ -59,7 +60,8 @@ class Command(object):
 
 class AuthenticateCommand(Command):
     def __init__(self, parser, name="authenticate",
-                 cmd_help="Authenticate using Google OAuth2"):
+                 cmd_help="Authenticate using Google OAuth2 (do this "
+                          "only once)"):
         super(AuthenticateCommand, self).__init__(
             parser,
             name,
@@ -88,7 +90,7 @@ class InterfaceCommand(Command):
 
 class GetCommand(Command):
     def __init__(self, parser, name="get",
-                 cmd_help="Get info from contact"):
+                 cmd_help="Get info from a single contact"):
         super(GetCommand, self).__init__(parser, name, cmd_help)
         self.parser.add_argument("person_id",
                                  help="Person ID to retrieve.")
@@ -101,20 +103,52 @@ class GetCommand(Command):
 
 class ListCommand(Command):
     def __init__(self, parser, name="list",
-                 cmd_help="List all contacts"):
+                 cmd_help="List all contact names and their default email"):
         super(ListCommand, self).__init__(parser, name, cmd_help)
+        self.parser.add_argument("-l", "--long",
+                                 action="store_true",
+                                 default=False,
+                                 help="List also the contacts alternate names,"
+                                      " email addresses and nicknames")
 
     def run(self):
         c = contacts.API.list_contacts()
-        fields = ["Person ID", "Name", "Email"]
-        utils.print_list(c, fields)
+        if CONF.command.long:
+            fields = ["Person ID", "Names", "Nickname", "Emails", ]
+            formatters = {"Names": ", ".join,
+                          "Emails": ", ".join}
+        else:
+            fields = ["Person ID", "Name", "Email"]
+            formatters = {}
+        utils.print_list(c, fields, formatters=formatters)
+
+
+class QueryCommand(Command):
+    def __init__(self, parser, name="query",
+                 cmd_help="Search contacts using given query"):
+        super(QueryCommand, self).__init__(parser, name, cmd_help)
+        self.parser.add_argument("query",
+                                 help="Query string (Regular expression).")
+        self.parser.add_argument("-m", "--mutt",
+                                 action="store_true",
+                                 default=False,
+                                 help="Use Mutt query format (default: False")
+
+    def run(self):
+        query = CONF.command.query
+        c = contacts.API.query_contacts(query)
+        if CONF.command.mutt:
+            utils.print_mutt(c)
+        else:
+            fields = ["Person ID", "Name", "Email"]
+            utils.print_list(c, fields)
 
 
 class CommandManager(object):
     def execute(self):
         try:
             CONF.command.func()
-        except exception.GoocoException as e:
+        except exception.GabonException as e:
             print("ERROR: %s" % e, file=sys.stderr)
             sys.exit(1)
         except KeyboardInterrupt:
